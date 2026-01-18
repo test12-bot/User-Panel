@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIGHWAY Delivery | خدمة الكابتن</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;500;700;900&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="bg-pattern"></div>
+
+    <header>
+        <h1 class="brand-title">
+            <span class="brand-text-1">HIGHWAY</span> <span class="brand-text-2">Delivery</span>
+        </h1>
+        <div class="brand-subtitle">شريكك اللوجستي الموثوق للمطاعم والمتاجر</div>
+    </header>
+
+    <div class="main-wrapper">
+
+        <div id="home-page" class="section active">
+            <div class="card-grid">
+                <div class="card" onclick="navigateTo('price-options')">
+                    <div class="card-icon-box"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <h3>قوائم الأسعار</h3>
+                    <p>استعرض أسعار التوصيل لمناطق السلط وعمان بوضوح</p>
+                </div>
+                
+                <div class="card premium-card" onclick="openOrderModal('direct')">
+                    <div class="card-icon-box"><i class="fa-solid fa-rocket"></i></div>
+                    <h3>استدعاء كابتن</h3>
+                    <p>خدمة فورية وسريعة للمتاجر</p>
+                </div>
+
+                <div class="card" onclick="navigateTo('contact-page')">
+                    <div class="card-icon-box"><i class="fa-solid fa-headset"></i></div>
+                    <h3>تواصل معنا</h3>
+                    <p>فريقنا جاهز لخدمتك والرد على استفساراتك</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="price-options" class="section">
+            <div class="back-nav" onclick="navigateTo('home-page')">
+                <i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية
+            </div>
+            <div class="card-grid">
+                <div class="card" onclick="setRegion('salt')">
+                    <div class="card-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                    <h3>مناطق السلط</h3>
+                </div>
+                <div class="card" onclick="setRegion('amman')">
+                    <div class="card-icon-box"><i class="fa-solid fa-city"></i></div>
+                    <h3>مناطق عمان</h3>
+                </div>
+                <div class="card" style="border-bottom: 4px solid var(--secondary);" onclick="navigateTo('calculator-page')">
+                    <div class="card-icon-box"><i class="fa-solid fa-calculator"></i></div>
+                    <h3>احسب بالكيلو</h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="start-point-page" class="section">
+            <div class="back-nav" onclick="navigateTo('price-options')">
+                <i class="fa-solid fa-arrow-right"></i> رجوع
+            </div>
+            <h2 style="text-align:center; margin-bottom:25px; color:var(--primary);">من أين سينطلق الطلب؟</h2>
+            <div class="card-grid">
+                <div class="card" onclick="selectStartPoint('umm_naaj')">
+                    <h3>أم النعاج</h3>
+                </div>
+                <div class="card" onclick="selectStartPoint('sarou')">
+                    <h3>السرو</h3>
+                </div>
+                <div class="card" onclick="showConstruction()">
+                    <h3 style="color:#aaa;">دبابنة (قريباً)</h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="list-page" class="section">
+            <div class="back-nav" onclick="navigateTo('start-point-page')">
+                <i class="fa-solid fa-arrow-right"></i> تغيير نقطة البدء
+            </div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInputs" class="search-box" placeholder="ابحث عن اسم المنطقة..." onkeyup="filterList()">
+            </div>
+            
+            <div style="text-align:center; margin-bottom:20px; font-size:0.9rem; color:#888;">
+                <i class="fa-solid fa-hand-pointer"></i> اضغط على المنطقة لتحديد التفاصيل
+            </div>
+
+            <div id="prices-container"></div>
+        </div>
+
+        <div id="calculator-page" class="section">
+            <div class="back-nav" onclick="navigateTo('price-options')">
+                <i class="fa-solid fa-arrow-right"></i> رجوع
+            </div>
+            
+            <div class="calculator-wrapper">
+                <h3 style="margin-bottom:20px; color:var(--dark-text);">حاسبة المسافة</h3>
+                <p style="margin-bottom:20px; color:#888; font-size:0.9rem;">فتحة العداد 1.00 دينار</p>
+                
+                <input type="number" id="distanceInput" class="calc-input" placeholder="المسافة (كم)" oninput="calculateTotal()">
+                
+                <div id="calcResult" class="result-display">0.00 <span style="font-size:1.5rem">JOD</span></div>
+                
+                <button class="btn-action" onclick="openOrderModal('calc')">
+                    تأكيد واستدعاء كابتن
+                </button>
+            </div>
+        </div>
+
+        <div id="contact-page" class="section">
+            <div class="back-nav" onclick="navigateTo('home-page')">
+                <i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية
+            </div>
+            <div class="card-grid">
+                <a href="https://www.instagram.com/highway_delivery_jor?igsh=amxpdXVnYmF3enlu" target="_blank" style="text-decoration:none;">
+                    <div class="card">
+                        <div class="card-icon-box" style="color:#C13584;"><i class="fa-brands fa-instagram"></i></div>
+                        <h3 class="en-font">Instagram</h3>
+                        <p>تابع جديدنا وعروضنا</p>
+                    </div>
+                </a>
+                
+                <a href="https://www.facebook.com/share/19yeSuPpnL/?mibextid=wwXIfr" target="_blank" style="text-decoration:none;">
+                    <div class="card">
+                        <div class="card-icon-box" style="color:#1877F2;"><i class="fa-brands fa-facebook-f"></i></div>
+                        <h3 class="en-font">Facebook</h3>
+                        <p>مجتمعنا على فيسبوك</p>
+                    </div>
+                </a>
+                
+                <a href="https://wa.me/962791819432" target="_blank" style="text-decoration:none;">
+                    <div class="card">
+                        <div class="card-icon-box" style="color:#25D366;"><i class="fa-brands fa-whatsapp"></i></div>
+                        <h3 class="en-font">WhatsApp</h3>
+                        <p>محادثة مباشرة مع الدعم</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="order-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px; width: 90%;">
+            <h3 style="color:var(--primary); margin-bottom: 20px;">تفاصيل إضافية للطلب</h3>
+            
+            <div style="text-align: right; margin-bottom: 15px;">
+                <label style="font-size: 0.85rem; display: block; margin-bottom: 5px;">قيمة الطلب (اختياري)</label>
+                <input type="text" id="modal-order-value" class="search-box" placeholder="مثال: 15 دينار">
+            </div>
+
+            <div style="text-align: right; margin-bottom: 20px;">
+                <label style="font-size: 0.85rem; display: block; margin-bottom: 5px;">ملاحظات أخرى (اختياري)</label>
+                <textarea id="modal-order-notes" class="search-box" rows="3" placeholder="مثال: بجانب الصيدلية، الطابق الثاني..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-action" style="background: #ccc; box-shadow: none;" onclick="closeOrderModal()">إلغاء</button>
+                <button class="btn-action" onclick="submitOrder()">إرسال الطلب</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <h4>من نحن</h4>
+            <p>HIGHWAY Delivery هي شركة رائدة في حلول التوصيل اللوجستي، نربط المطاعم والمتاجر بأفضل الكباتن لضمان وصول طلباتكم بسرعة وأمان. نسعى دائماً لتقديم تجربة مستخدم استثنائية وخدمة عملاء لا تضاهى.</p>
+        </div>
+        <div class="copyright">
+            &copy; 2024 HIGHWAY Delivery. All Rights Reserved.
+        </div>
+    </footer>
+
+    <div id="construction-modal" class="modal" onclick="closeModal()">
+        <div class="modal-content">
+            <i class="fa-solid fa-person-digging" style="font-size:3rem; color:var(--secondary); margin-bottom:15px;"></i>
+            <h3>منطقة قيد التجهيز</h3>
+            <p style="color:#666;">نعمل جاهدين لتغطية هذه المنطقة قريباً.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

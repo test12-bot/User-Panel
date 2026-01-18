@@ -1,5 +1,4 @@
-/* ... الكود السابق يبقى كما هو ... */
-
+// --- 1. توليد خلفية الطعام المتحركة ---
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('bg-pattern');
     const icons = [
@@ -7,17 +6,24 @@ document.addEventListener('DOMContentLoaded', () => {
         'fa-ice-cream', 'fa-drumstick-bite', 'fa-bowl-food', 'fa-carrot'
     ];
     
+    // إنشاء 20 أيقونة عشوائية
     for(let i=0; i<20; i++) {
         const icon = document.createElement('i');
         icon.className = `fa-solid ${icons[Math.floor(Math.random() * icons.length)]} food-icon`;
+        
+        // مواقع وأحجام عشوائية
         icon.style.left = Math.random() * 100 + '%';
         icon.style.top = Math.random() * 100 + '%';
-        icon.style.fontSize = (Math.random() * 2 + 1) + 'rem'; 
-        icon.style.animationDuration = (Math.random() * 10 + 10) + 's'; 
+        icon.style.fontSize = (Math.random() * 2 + 1) + 'rem'; // حجم بين 1 و 3
+        icon.style.animationDuration = (Math.random() * 10 + 10) + 's'; // سرعة بين 10 و 20 ثانية
         icon.style.animationDelay = (Math.random() * 5) + 's';
+
         container.appendChild(icon);
     }
 });
+
+// --- 2. منطق التطبيق (نفس المنطق السابق) ---
+const WHATSAPP_NUMBER = "962791819432";
 
 const prices_salt_umm_naaj = [
     {n:"ضاحية الزهور", p:"2.00"}, {n:"دبابنة", p:"2.00"}, {n:"بركة العامرية", p:"2.00"},
@@ -45,7 +51,7 @@ const prices_salt_umm_naaj = [
     {n:"الجمارك", p:"2.00"}, {n:"إسكان طيبة", p:"2.00"}, {n:"إسكان آسيا", p:"2.50"},
     {n:"حي السميرات", p:"2.50"}, {n:"الفروسية", p:"2.50"}, {n:"الجيعة", p:"2.50"},
     {n:"ام نعاج", p:"1.50"}, {n:"دوار الكمالية الحمر", p:"2.00"}, {n:"الفحيص", p:"3.50"},
-    {n:"ماحص", p:"4.00"}, {n:"دوار صويلح", p:"3.50"}, {n:"عين الباشا", p:"3.00"},
+    {n:"ماخص", p:"4.00"}, {n:"دوار صويلح", p:"3.50"}, {n:"عين الباشا", p:"3.00"},
     {n:"جامعة البلقاء التطبيقية", p:"3.50"}
 ];
 
@@ -90,7 +96,7 @@ const prices_amman = [
 let currentRegion = '';
 let currentStartPoint = '';
 let currentList = [];
-let pendingOrderData = {}; // لتخزين بيانات الطلب مؤقتاً قبل فتح المودال
+let lastOrderContext = {}; // لتخزين بيانات الطلب عند فتح المودال (مصدر الطلب، الوجهة، السعر، الخ)
 
 function navigateTo(sectionId) {
     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
@@ -109,41 +115,9 @@ function selectStartPoint(point) {
     navigateTo('list-page');
 }
 
-// فتح مودال التفاصيل
-function openOrderModal(type, data = {}) {
-    pendingOrderData = { type, ...data };
-    document.getElementById('modal-order-value').value = '';
-    document.getElementById('modal-order-notes').value = '';
-    document.getElementById('order-details-modal').style.display = 'flex';
-}
-
-function closeOrderModal() {
-    document.getElementById('order-details-modal').style.display = 'none';
-}
-
-// تجميع الرسالة وإرسالها
-function submitOrder() {
-    const val = document.getElementById('modal-order-value').value || "غير محدد";
-    const notes = document.getElementById('modal-order-notes').value || "لا يوجد";
-    let baseMsg = "";
-
-    if (pendingOrderData.type === 'direct') {
-        baseMsg = `مرحباً، أود استدعاء كابتن من فضلك.`;
-    } else if (pendingOrderData.type === 'area') {
-        baseMsg = `مرحباً HIGHWAY Delivery، أريد طلب كابتن:\n- نقطة البدء: ${pendingOrderData.startPoint}\n- الوجهة: ${pendingOrderData.area}\n- السعر: ${pendingOrderData.price} دينار`;
-    } else if (pendingOrderData.type === 'calc') {
-        const dist = document.getElementById('distanceInput').value;
-        const price = document.getElementById('calcResult').innerText;
-        if(!dist) { alert("يرجى إدخال المسافة أولاً"); return; }
-        baseMsg = `مرحباً، طلب كابتن (حساب بالكيلو):\n- المسافة: ${dist} كم\n- السعر التقديري: ${price}`;
-    }
-
-    const finalMsg = `${baseMsg}\n- قيمة الطلب: ${val}\n- ملاحظات: ${notes}`;
-    
-    // الرابط العالمي للإرسال لأي شخص
-    const url = `https://wa.me/?text=${encodeURIComponent(finalMsg)}`;
-    window.open(url, '_blank');
-    closeOrderModal();
+function directCallCaptain() {
+    // لم يعد يستعمل مباشرة؛ استبدلنا بالسلوك الجديد openOrderModal('direct')
+    openOrderModal('direct');
 }
 
 function generateList() {
@@ -174,7 +148,7 @@ function renderList(list) {
 
         const el = document.createElement('div');
         el.className = 'price-list-item';
-        el.onclick = () => openOrderModal('area', { area: item.n, price: item.p, startPoint: startPointName });
+        el.onclick = () => openOrderModal('list', { area: item.n, price: item.p, startPoint: startPointName });
         el.innerHTML = `
             <div style="flex-grow:1">
                 <div class="item-name">${item.n}</div>
@@ -192,6 +166,127 @@ function filterList() {
     renderList(filtered);
 }
 
+/* ---------- ميزة المودال لملء تفاصيل الطلب (مضاف) ---------- */
+
+/**
+ * openOrderModal(source, context)
+ * source: 'list' | 'calc' | 'direct'
+ * context: عند 'list' -> {area, price, startPoint}
+ *          عند 'calc' -> (يتم أخذ المسافة والسعر من الحاسبة)
+ *          عند 'direct' -> استدعاء فوري (لا يوجد منطقة محددة)
+ */
+function openOrderModal(source, context = {}) {
+    // حفظ السياق لوقت الإرسال
+    lastOrderContext = { source, ...context };
+
+    // ملأ الحقول المبدئية
+    const phoneEl = document.getElementById('orderPhone');
+    const valueEl = document.getElementById('orderValue');
+    const notesEl = document.getElementById('orderNotes');
+
+    phoneEl.value = WHATSAPP_NUMBER; // القيمة الافتراضية رقم الشركة (يمكن تغييره)
+    valueEl.value = ''; // افتراضي فارغ (اختياري)
+    notesEl.value = '';
+
+    // إذا كان المصدر 'calc' نحسب السعر التقديري ونضعه في قيمة الطلب كمقترح
+    if(source === 'calc') {
+        const dist = parseFloat(document.getElementById('distanceInput').value);
+        if(!isNaN(dist)) {
+            const total = (dist * 0.30) + 1.00;
+            // نعرضه كمقترح في حقل قيمة الطلب (اختياري للمستخدم)
+            valueEl.value = total.toFixed(2);
+        }
+    }
+
+    // إذا كان المصدر 'list' ونوجد سعر، نملأ حقل قيمة الطلب باقتراح السعر (اختياري)
+    if(source === 'list' && context.price) {
+        valueEl.value = context.price;
+    }
+
+    // إظهار المودال
+    const modal = document.getElementById('order-modal');
+    modal.style.display = 'flex';
+}
+
+function closeOrderModal(e) {
+    if (e && e.target && e.target.id === 'order-modal') {
+        // clicked on backdrop
+        document.getElementById('order-modal').style.display = 'none';
+    } else if (!e) {
+        // تم الضغط على زر إلغاء
+        document.getElementById('order-modal').style.display = 'none';
+    }
+}
+
+// إغلاق المودال عند النقر خارجه (تم التعامل في HTML بإيقاف انتشار الحدث)
+function closeOrderModalManual() {
+    document.getElementById('order-modal').style.display = 'none';
+}
+
+// ربط زر الإرسال: إنشاء رسالة بصيغة الواتساب مع الحقول الإضافية
+function sendOrderWhats() {
+    const phoneRaw = document.getElementById('orderPhone').value.trim();
+    let phone = phoneRaw.replace(/\D+/g, ''); // إزالة أي حروف أو رموز
+    if(!phone) {
+        alert('من فضلك أدخل رقم الهاتف المستلم (مع رمز البلد بدون +).');
+        return;
+    }
+
+    // بناء نص الرسالة حسب السياق الأخير
+    const ctx = lastOrderContext || {};
+    let msgLines = [];
+    msgLines.push('مرحباً HIGHWAY Delivery، لدي طلب كابتن:');
+
+    if(ctx.source === 'list') {
+        const sp = ctx.startPoint || '';
+        if(sp) msgLines.push(`- نقطة البدء: ${sp}`);
+        if(ctx.area) msgLines.push(`- الوجهة: ${ctx.area}`);
+        if(ctx.price) msgLines.push(`- السعر: ${ctx.price} دينار`);
+    } else if(ctx.source === 'calc') {
+        const dist = parseFloat(document.getElementById('distanceInput').value);
+        const computed = (!isNaN(dist)) ? ((dist * 0.30) + 1.00).toFixed(2) : null;
+        msgLines.push(`- نوع الطلب: حساب بالكيلو`);
+        if(!isNaN(dist)) msgLines.push(`- المسافة: ${dist} كم`);
+        if(computed) msgLines.push(`- السعر التقديري: ${computed} دينار`);
+    } else if(ctx.source === 'direct') {
+        msgLines.push(`- نوع الطلب: استدعاء فوري`);
+    }
+
+    // حقل قيمة الطلب (اختياري)
+    const orderValue = document.getElementById('orderValue').value.trim();
+    if(orderValue) {
+        msgLines.push(`- قيمة الطلب: ${orderValue} دينار`);
+    }
+
+    // حقل الملاحظات (اختياري)
+    const notes = document.getElementById('orderNotes').value.trim();
+    if(notes) {
+        msgLines.push(`- ملاحظات: ${notes}`);
+    }
+
+    msgLines.push('شكراً.');
+
+    const fullMsg = encodeURIComponent(msgLines.join('%0A').replace(/%0A/g, '%0A'));
+
+    // بناء رابط wa.me
+    // wa.me requires number without plus sign and no leading zeros for country code
+    // We assume user entered number with country code (like 9627xxxxxxx), so just use it:
+    const waUrl = `https://wa.me/${phone}?text=${fullMsg}`;
+
+    // فتح الرابط في نافذة جديدة
+    window.open(waUrl, '_blank');
+
+    // غلق المودال
+    document.getElementById('order-modal').style.display = 'none';
+}
+
+/* --- الدوال الأصلية الأخرى مع تعديلات طفيفة لعدم كسر السلوك --- */
+
+function orderArea(area, price, startPoint) {
+    // لم يعد يرسل مباشرة؛ الآن يفتح مودال مع تمرير السياق
+    openOrderModal('list', { area: area, price: price, startPoint: startPoint });
+}
+
 function calculateTotal() {
     const dist = parseFloat(document.getElementById('distanceInput').value);
     const resDisplay = document.getElementById('calcResult');
@@ -203,10 +298,15 @@ function calculateTotal() {
     resDisplay.innerHTML = total.toFixed(2) + ' <span style="font-size:1.5rem">JOD</span>';
 }
 
+function orderViaCalc() {
+    // لم يعد يستخدم مباشرة؛ تم استبداله بفتح المودال من الزر في HTML
+    openOrderModal('calc');
+}
+
 function showConstruction() {
     document.getElementById('construction-modal').style.display = 'flex';
 }
-
 function closeModal() {
     document.getElementById('construction-modal').style.display = 'none';
+}
 }

@@ -199,7 +199,7 @@ function calculateTotal() {
         resDisplay.innerHTML = '0.00 <span style="font-size:1.5rem">JOD</span>';
         return;
     }
-    const total = (dist * 0.30) + 1.00;
+    const total = (dist * 0.20) + 1.00;
     resDisplay.innerHTML = total.toFixed(2) + ' <span style="font-size:1.5rem">JOD</span>';
 }
 

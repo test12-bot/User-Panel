@@ -1,267 +1,198 @@
-LOGO=$(cat /home/claude/logo_datauri.txt)
-cat > /home/claude/highway/index.html << HTMLEOF
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-<meta name="description" content="HIGHWAY Delivery — قائمة الأسعار، حاسبة المسافة، واستدعاء كابتن">
-<title>HIGHWAY Delivery | قائمة الأسعار، واستدعاء كابتن</title>
-<link rel="icon" href="${LOGO}">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIGHWAY Delivery | قائمة الأسعار، واستدعاء كابتن</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;500;700;900&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="ambient">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-  <svg viewBox="0 0 400 900" preserveAspectRatio="none">
-    <path class="road-line" d="M -40,760 C 120,700 100,560 220,520 C 340,480 300,340 420,300"/>
-    <path class="road-line" d="M -60,160 C 60,120 40,260 160,300 C 300,340 260,180 440,220" style="animation-duration:26s; animation-direction:reverse;"/>
-  </svg>
-</div>
+    <div id="bg-pattern"></div>
 
-<div id="splash">
-  <div class="splash-icons" id="splashIcons"></div>
-  <div class="splash-content">
-    <div class="splash-logo-wrap">
-      <div class="splash-text-logo">
-        <span class="s1">HIGHWAY</span><span class="s2">Delivery</span>
-      </div>
-    </div>
-    <div class="splash-tagline">أسرع طريق لطلباتك</div>
-    <div class="splash-status">
-      <span>جاري تجهيز قائمة الأسعار</span>
-      <span class="dot-flow"><span></span><span></span><span></span></span>
-    </div>
-    <button class="splash-enter" id="enterBtn" type="button">ادخل للموقع ←</button>
-  </div>
-</div>
+    <header>
+        <h1 class="brand-title">
+            <span class="brand-text-1">HIGHWAY</span> <span class="brand-text-2">Delivery</span>
+        </h1>
+        <div class="brand-subtitle">أسرع طريق لطلباتك</div>
+    </header>
 
-<div class="app-shell">
+    <div class="main-wrapper">
 
-  <header class="app-header" id="appHeader">
-    <button class="header-back" id="headerBack" type="button" aria-label="رجوع">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-    <div class="brand-mini">
-      <img class="brand-mini-logo" src="${LOGO}" alt="HIGHWAY Delivery">
-      <div class="brand-mini-text">
-        <span class="brand-mini-title">HIGHWAY <em>Delivery</em></span>
-        <span class="brand-mini-sub" id="headerSub">أسرع طريق لطلباتك</span>
-      </div>
-    </div>
-  </header>
+        <div id="home-page" class="section active">
+            <div class="card-grid">
+                <div class="card" onclick="navigateTo('price-options')">
+                    <div class="card-icon-box"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <h3>قوائم الأسعار</h3>
+                    <p>استعرض أسعار التوصيل لمناطق السلط وعمان بوضوح</p>
+                </div>
+                
+                <div class="card premium-card" onclick="openOrderModal('direct')">
+                    <div class="card-icon-box"><i class="fa-solid fa-rocket"></i></div>
+                    <h3>استدعاء كابتن</h3>
+                    <p>خدمة فورية وسريعة للمتاجر</p>
+                </div>
 
-  <main class="main">
-
-    <section class="screen active" id="screen-home">
-      <div class="container" style="display:flex; flex-direction:column; flex:1;">
-        <div class="page-heading">
-          <h1>لا تحتار</h1>
-          <p>الـ HIGHWAY Delivery أسرع قرار — اختر الخدمة اللي بدك ياها</p>
-        </div>
-        <div class="card-stack">
-          <button class="action-card prep glass" type="button" onclick="goTo('screen-price-options')">
-            <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3.5" width="12" height="17" rx="2"/><path d="M9.5 3.5V3a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 3v.5"/><path d="M9 10h6M9 13.5h6M9 17h3.5"/></svg></span>
-            <span class="txt">
-              <h3>قوائم الأسعار</h3>
-              <p>استعرض أسعار التوصيل لمناطق السلط وعمان بوضوح</p>
-            </span>
-            <span class="chev">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            </span>
-          </button>
-
-          <button class="action-card confirm glass" type="button" onclick="openOrderModal('direct')">
-            <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></span>
-            <span class="txt">
-              <h3>استدعاء كابتن</h3>
-              <p>خدمة فورية وسريعة للمتاجر</p>
-            </span>
-            <span class="chev">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            </span>
-          </button>
-
-          <button class="action-card contact glass" type="button" onclick="goTo('screen-contact')">
-            <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 16 0v4.5a2 2 0 0 1-2 2h-1v-6h3M4 16.5V12h3v6H5a1 1 0 0 1-1-1Z"/><path d="M8 20.5h5a2 2 0 0 0 2-2"/></svg></span>
-            <span class="txt">
-              <h3>تواصل معنا</h3>
-              <p>فريقنا جاهز لخدمتك والرد على استفساراتك</p>
-            </span>
-            <span class="chev">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            </span>
-          </button>
-        </div>
-        <div class="dash-footer">HIGHWAY Delivery &nbsp;|&nbsp; أسرع طريق لطلباتك</div>
-      </div>
-    </section>
-
-    <section class="screen" id="screen-price-options">
-      <div class="container">
-        <div class="page-heading">
-          <h1>قوائم الأسعار</h1>
-          <p>اختر منطقة التسعير أو احسب المسافة يدويًا</p>
-        </div>
-        <div class="rest-grid">
-          <button class="rest-card glass" type="button" onclick="setRegion('salt')">
-            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.4"/></svg></span>
-            <span>مناطق السلط</span>
-          </button>
-          <button class="rest-card glass" type="button" onclick="setRegion('amman')">
-            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V8l5-3v15M9 20V11l5-3v12M14 20V5l6 3v12"/><path d="M4 20h16"/></svg></span>
-            <span>مناطق عمان</span>
-          </button>
-          <button class="rest-card glass" type="button" onclick="goTo('screen-calculator')">
-            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h1.2M12 11h1.2M16 11h1.2M8 14.5h1.2M12 14.5h1.2M16 14.5h1.2M8 18h1.2M12 18h1.2M16 18h1.2"/></svg></span>
-            <span>احسب بالكيلو</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section class="screen" id="screen-start-point">
-      <div class="container">
-        <div class="page-heading">
-          <h1>من أين سينطلق الطلب؟</h1>
-          <p>اختر نقطة البداية لعرض الأسعار المناسبة</p>
-        </div>
-        <div class="rest-grid">
-          <button class="rest-card glass" type="button" onclick="selectStartPoint('umm_naaj')">
-            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.2 4h13.6l1.2 5.5"/><path d="M4 9.5a2.2 2.2 0 0 0 4.3.7 2.2 2.2 0 0 0 4.3 0 2.2 2.2 0 0 0 4.3 0 2.2 2.2 0 0 0 4.3-.7"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg></span>
-            <span>أم النعاج</span>
-          </button>
-          <button class="rest-card glass" type="button" onclick="selectStartPoint('sarou')">
-            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.2 4h13.6l1.2 5.5"/><path d="M4 9.5a2.2 2.2 0 0 0 4.3.7 2.2 2.2 0 0 0 4.3 0 2.2 2.2 0 0 0 4.3 0 2.2 2.2 0 0 0 4.3-.7"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg></span>
-            <span>السرو</span>
-          </button>
-          <button class="rest-card glass disabled" type="button" onclick="showConstruction()">
-            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.2 4h13.6l1.2 5.5"/><path d="M4 9.5a2.2 2.2 0 0 0 4.3.7 2.2 2.2 0 0 0 4.3 0 2.2 2.2 0 0 0 4.3 0 2.2 2.2 0 0 0 4.3-.7"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M10 20v-5h4v5"/></svg></span>
-            <span>دبابنة (قريباً)</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section class="screen" id="screen-list">
-      <div class="container">
-        <div class="page-heading">
-          <h1>الأسعار</h1>
-          <p id="listSubtitle">نقطة الانطلاق: —</p>
+                <div class="card" onclick="navigateTo('contact-page')">
+                    <div class="card-icon-box"><i class="fa-solid fa-headset"></i></div>
+                    <h3>تواصل معنا</h3>
+                    <p>فريقنا جاهز لخدمتك والرد على استفساراتك</p>
+                </div>
+            </div>
         </div>
 
-        <div class="search-field">
-          <input type="text" id="searchInputs" placeholder="ابحث عن اسم المنطقة..." onkeyup="filterList()">
-          <span class="s-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+        <div id="price-options" class="section">
+            <div class="back-nav" onclick="navigateTo('home-page')">
+                <i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية
+            </div>
+            <div class="card-grid">
+                <div class="card" onclick="setRegion('salt')">
+                    <div class="card-icon-box"><i class="fa-solid fa-location-dot"></i></div>
+                    <h3>مناطق السلط</h3>
+                </div>
+                <div class="card" onclick="setRegion('amman')">
+                    <div class="card-icon-box"><i class="fa-solid fa-city"></i></div>
+                    <h3>مناطق عمان</h3>
+                </div>
+                <div class="card" style="border-bottom: 4px solid var(--secondary);" onclick="navigateTo('calculator-page')">
+                    <div class="card-icon-box"><i class="fa-solid fa-calculator"></i></div>
+                    <h3>احسب بالكيلو</h3>
+                </div>
+            </div>
         </div>
 
-        <div class="list-hint">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5 12 14l7-8"/><path d="M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11"/></svg>
-‎          اضغط على المنطقة لاستدعاء كابتن إليها
+        <div id="start-point-page" class="section">
+            <div class="back-nav" onclick="navigateTo('price-options')">
+                <i class="fa-solid fa-arrow-right"></i> رجوع
+            </div>
+            <h2 style="text-align:center; margin-bottom:25px; color:var(--primary);">من أين سينطلق الطلب؟</h2>
+            <div class="card-grid">
+                <div class="card" onclick="selectStartPoint('umm_naaj')">
+                    <h3>أم النعاج</h3>
+                </div>
+                <div class="card" onclick="selectStartPoint('sarou')">
+                    <h3>السرو</h3>
+                </div>
+                <div class="card" onclick="showConstruction()">
+                    <h3 style="color:#aaa;">دبابنة (قريباً)</h3>
+                </div>
+            </div>
         </div>
 
-        <div id="prices-container" class="price-list"></div>
-      </div>
-    </section>
+        <div id="list-page" class="section">
+            <div class="back-nav" onclick="navigateTo('start-point-page')">
+                <i class="fa-solid fa-arrow-right"></i> تغيير نقطة البدء
+            </div>
+            
+            <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInputs" class="search-box" placeholder="ابحث عن اسم المنطقة..." onkeyup="filterList()">
+            </div>
+            
+            <div style="text-align:center; margin-bottom:20px; font-size:0.9rem; color:#888;">
+                <i class="fa-solid fa-hand-pointer"></i> اضغط على المنطقة لتحديد التفاصيل
+            </div>
 
-    <section class="screen" id="screen-calculator">
-      <div class="container">
-        <div class="page-heading">
-          <h1>حاسبة المسافة</h1>
-          <p>احسب السعر التقديري حسب عدد الكيلومترات</p>
+            <div id="prices-container"></div>
         </div>
 
-        <div class="form-card glass">
-          <div class="calc-note">فتحة العداد 1.00 دينار + 0.20 دينار لكل كم</div>
-
-          <div class="field" style="margin-bottom:6px;">
-            <label>المسافة (كم)</label>
-            <input type="number" id="distanceInput" placeholder="مثال: 5" oninput="calculateTotal()">
-          </div>
-
-          <div class="calc-result" id="calcResult">0.00 <span>JOD</span></div>
-
-          <button class="submit-btn" type="button" onclick="openOrderModal('calc')">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
-            <span class="btn-label">تأكيد واستدعاء كابتن</span>
-          </button>
+        <div id="calculator-page" class="section">
+            <div class="back-nav" onclick="navigateTo('price-options')">
+                <i class="fa-solid fa-arrow-right"></i> رجوع
+            </div>
+            
+            <div class="calculator-wrapper">
+                <h3 style="margin-bottom:20px; color:var(--dark-text);">حاسبة المسافة</h3>
+                <p style="margin-bottom:20px; color:#888; font-size:0.9rem;">فتحة العداد 1.00 دينار</p>
+                
+                <input type="number" id="distanceInput" class="calc-input" placeholder="المسافة (كم)" oninput="calculateTotal()">
+                
+                <div id="calcResult" class="result-display">0.00 <span style="font-size:1.5rem">JOD</span></div>
+                
+                <button class="btn-action" onclick="openOrderModal('calc')">
+                    تأكيد واستدعاء كابتن
+                </button>
+            </div>
         </div>
-      </div>
-    </section>
 
-    <section class="screen" id="screen-contact">
-      <div class="container">
-        <div class="page-heading">
-          <h1>تواصل معنا</h1>
-          <p>فريقنا جاهز لخدمتك والرد على استفساراتك</p>
+        <div id="contact-page" class="section">
+            <div class="back-nav" onclick="navigateTo('home-page')">
+                <i class="fa-solid fa-arrow-right"></i> القائمة الرئيسية
+            </div>
+            <div class="card-grid">
+                <a href="https://www.instagram.com/highway_delivery_jor?igsh=amxpdXVnYmF3enlu" target="_blank" style="text-decoration:none;">
+                    <div class="card">
+                        <div class="card-icon-box" style="color:#C13584;"><i class="fa-brands fa-instagram"></i></div>
+                        <h3 class="en-font">Instagram</h3>
+                        <p>تابع جديدنا وعروضنا</p>
+                    </div>
+                </a>
+                
+                <a href="https://www.facebook.com/share/19yeSuPpnL/?mibextid=wwXIfr" target="_blank" style="text-decoration:none;">
+                    <div class="card">
+                        <div class="card-icon-box" style="color:#1877F2;"><i class="fa-brands fa-facebook-f"></i></div>
+                        <h3 class="en-font">Facebook</h3>
+                        <p>مجتمعنا على فيسبوك</p>
+                    </div>
+                </a>
+                
+                <a href="https://wa.me/962791819432" target="_blank" style="text-decoration:none;">
+                    <div class="card">
+                        <div class="card-icon-box" style="color:#25D366;"><i class="fa-brands fa-whatsapp"></i></div>
+                        <h3 class="en-font">WhatsApp</h3>
+                        <p>محادثة مباشرة مع الدعم</p>
+                    </div>
+                </a>
+            </div>
         </div>
-        <div class="rest-grid social-grid">
-          <a class="rest-card glass" href="https://www.instagram.com/highway_delivery_jor?igsh=amxpdXVnYmF3enlu" target="_blank" rel="noopener">
-            <span class="ico social-ico ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg></span>
-            <span>Instagram</span>
-          </a>
-          <a class="rest-card glass" href="https://www.facebook.com/share/19yeSuPpnL/?mibextid=wwXIfr" target="_blank" rel="noopener">
-            <span class="ico social-ico fb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8.5h2V5h-2.3C12.4 5 11 6.5 11 8.9v2.1H9v3.5h2V21h3.2v-6.5H16l.6-3.5h-2.8v-1.6c0-.6.3-.9.9-.9Z"/></svg></span>
-            <span>Facebook</span>
-          </a>
-          <a class="rest-card glass" href="https://wa.me/962791819432" target="_blank" rel="noopener">
-            <span class="ico social-ico wa"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M16.02 2.67C8.65 2.67 2.67 8.65 2.67 16.02c0 2.5.68 4.94 1.98 7.08L2.7 29.33l6.4-1.9a13.3 13.3 0 0 0 6.92 1.9h.01c7.37 0 13.35-5.98 13.35-13.35 0-3.56-1.39-6.92-3.9-9.44a13.28 13.28 0 0 0-9.46-3.87Zm7.8 19.06c-.33.93-1.9 1.77-2.63 1.86-.67.09-1.5.13-2.42-.15a19.4 19.4 0 0 1-2.24-.83c-3.95-1.71-6.53-5.68-6.73-5.95-.2-.26-1.6-2.13-1.6-4.06 0-1.93.99-2.87 1.35-3.27.35-.4.77-.5 1.02-.5.26 0 .52 0 .74.01.24.01.56-.09.87.67.33.8 1.13 2.75 1.23 2.95.1.2.16.44.03.7-.13.27-.2.44-.4.67-.2.24-.42.53-.6.71-.2.2-.41.42-.18.82.24.4 1.05 1.74 2.26 2.83 1.55 1.4 2.86 1.83 3.26 2.04.4.2.63.17.87-.1.24-.27 1-1.18 1.27-1.58.27-.4.53-.33.9-.2.36.13 2.32 1.1 2.72 1.3.4.2.66.3.76.47.1.17.1.98-.23 1.91Z" transform="translate(-2,-2) scale(.72)"/></svg></span>
-            <span>WhatsApp</span>
-          </a>
-        </div>
-        <div class="dash-footer">&copy; 2025 HIGHWAY Delivery. All Rights Reserved.</div>
-      </div>
-    </section>
 
-  </main>
-</div>
-
-<div class="modal-glass" id="order-details-modal">
-  <div class="modal-card">
-    <h3>تفاصيل إضافية للطلب</h3>
-
-    <div class="field">
-      <label>قيمة الطلب <span class="opt">(اختياري)</span></label>
-      <input type="text" id="modal-order-value" placeholder="مثال: 15 دينار">
     </div>
 
-    <div class="field">
-      <label>ملاحظات أخرى <span class="opt">(اختياري)</span></label>
-      <textarea id="modal-order-notes" rows="3" placeholder="مثال: بجانب الصيدلية، الطابق الثاني..."></textarea>
+    <div id="order-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px; width: 90%;">
+            <h3 style="color:var(--primary); margin-bottom: 20px;">تفاصيل إضافية للطلب</h3>
+            
+            <div style="text-align: right; margin-bottom: 15px;">
+                <label style="font-size: 0.85rem; display: block; margin-bottom: 5px;">قيمة الطلب (اختياري)</label>
+                <input type="text" id="modal-order-value" class="search-box" placeholder="مثال: 15 دينار">
+            </div>
+
+            <div style="text-align: right; margin-bottom: 20px;">
+                <label style="font-size: 0.85rem; display: block; margin-bottom: 5px;">ملاحظات أخرى (اختياري)</label>
+                <textarea id="modal-order-notes" class="search-box" rows="3" placeholder="مثال: بجانب الصيدلية، الطابق الثاني..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-action" style="background: #ccc; box-shadow: none;" onclick="closeOrderModal()">إلغاء</button>
+                <button class="btn-action" onclick="submitOrder()">إرسال الطلب</button>
+            </div>
+        </div>
     </div>
 
-    <div class="modal-actions">
-      <button class="btn-ghost" type="button" onclick="closeOrderModal()">إلغاء</button>
-      <button class="submit-btn" type="button" id="orderSubmitBtn" onclick="submitOrder()">
-        <span class="spinner"></span>
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
-        <span class="btn-label">إرسال الطلب</span>
-      </button>
+    <footer>
+        <div class="footer-content">
+            <h4>لا تحتار</h4>
+            <p>الـ HIGHWAY Delivery أسرع قرار</p>
+        </div>
+        <div class="copyright">
+            &copy; 2025 HIGHWAY Delivery. All Rights Reserved.
+        </div>
+    </footer>
+
+    <div id="construction-modal" class="modal" onclick="closeModal()">
+        <div class="modal-content">
+            <i class="fa-solid fa-person-digging" style="font-size:3rem; color:var(--secondary); margin-bottom:15px;"></i>
+            <h3>منطقة قيد التجهيز</h3>
+            <p style="color:#666;">نعمل جاهدين لتغطية هذه المنطقة قريباً.</p>
+        </div>
     </div>
-  </div>
-</div>
 
-<div class="modal-glass" id="construction-modal" onclick="if(event.target===this) closeModal()">
-  <div class="modal-card construction-card">
-    <div class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5 18 3l3 3-3.5 3.5"/><path d="M13 8 4 17v3h3l9-9"/><path d="M11 6 3 14"/></svg></div>
-    <h3>منطقة قيد التجهيز</h3>
-    <p>نعمل جاهدين لتغطية هذه المنطقة قريباً.</p>
-    <button class="submit-btn" type="button" onclick="closeModal()">
-      <span class="btn-label">تمام</span>
-    </button>
-  </div>
-</div>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
-HTMLEOF
-wc -l /home/claude/highway/index.html
-wc -c /home/claude/highway/index.html

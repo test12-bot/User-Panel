@@ -114,26 +114,26 @@ function buildSplashIcons() {
 }
 
 /* ---------- فيديو الشاشة الافتتاحية بخلفية شفافة ----------
-   الفيديو لا يحمل قناة شفافية، لذلك نعرضه عبر WebGL ونحذف لونه التركوازي لحظياً
-   فيظهر الإطار الزجاجي من خلفه تماماً كما كان مع الصورة.  إن تعذّر ذلك تظهر صورة اللوجو الثابتة. */
+   الفيديو بلا قناة شفافية، فيُعرض عبر WebGL مع حذف لونه التركوازي لحظياً ليظهر الإطار الزجاجي من خلفه.
+   لضمان عدم اختفاء اللوجو نهائياً: ننتهي دائماً بصورة اللوجو الثابتة (بنفس مقاس آخر إطار) بدل الاعتماد
+   على لوحة WebGL، وننتقل إليها فوراً إذا فشل أي شيء (منع التشغيل التلقائي، فقد سياق WebGL، تأخر الفيديو). */
 function initIntroVideo() {
     const video = document.getElementById('splashVideo');
     const canvas = document.getElementById('splashCanvas');
-    const fallback = document.getElementById('splashFallback');
-    if (!video || !canvas || !fallback) return null;
+    const card = document.getElementById('splashCard');
+    if (!video || !canvas || !card) return null;
 
-    let stopped = false, started = false;
-    const showFallback = () => {
-        if (started) return;
-        canvas.style.display = 'none';
-        fallback.classList.add('show');
+    let stopped = false;
+    const showStatic = () => {                 // يعرض الصورة الثابتة ويوقف الرسم والفيديو
+        stopped = true;
+        card.classList.add('static-logo');
+        video.pause();
     };
 
     let gl = null;
-    try {
-        gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: true, antialias: false });
-    } catch (e) { gl = null; }
-    if (!gl) { showFallback(); return { stop() {} }; }
+    try { gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, preserveDrawingBuffer: true }); } catch (e) {}
+    if (!gl) { showStatic(); return { stop() {} }; }
+    canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); showStatic(); });
 
     const compile = (type, src) => {
         const sh = gl.createShader(type);
@@ -153,20 +153,18 @@ function initIntroVideo() {
         '  gl_FragColor = vec4(f * a, a);' +                          // ألوان مضروبة مسبقاً بالشفافية
         '}');
     const prog = gl.createProgram();
-    if (!vs || !fs) { showFallback(); return { stop() {} }; }
+    if (!vs || !fs) { showStatic(); return { stop() {} }; }
     gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { showFallback(); return { stop() {} }; }
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { showStatic(); return { stop() {} }; }
     gl.useProgram(prog);
 
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, 'p');
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
-    const tex = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -174,37 +172,38 @@ function initIntroVideo() {
 
     const draw = () => {
         if (video.readyState < 2) return;
-        try {
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
-        } catch (e) { return; }
+        try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video); }
+        catch (e) { showStatic(); return; }
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
+    let finished = false;
+    const canvasBlank = () => {                                   // هل الصف الأوسط من اللوحة فارغ؟
+        if (gl.isContextLost()) return true;
+        const row = new Uint8Array(canvas.width * 4);
+        gl.readPixels(0, canvas.height >> 1, canvas.width, 1, gl.RGBA, gl.UNSIGNED_BYTE, row);
+        for (let i = 3; i < row.length; i += 4) if (row[i] > 200) return false;
+        return true;
+    };
     const next = (fn) => (video.requestVideoFrameCallback ? video.requestVideoFrameCallback(fn) : requestAnimationFrame(fn));
-    const loop = () => {
-        if (stopped) return;
-        draw();
-        if (!video.ended) next(loop);
-    };
+    const loop = () => { if (!stopped) { draw(); next(loop); } };
 
-    let looping = false;
-    const begin = () => {
-        if (looping) return;
-        looping = true; started = true;
-        fallback.classList.remove('show'); canvas.style.display = '';
-        next(loop);
-    };
+    let began = false;
+    const begin = () => { if (!began && !stopped) { began = true; next(loop); } };
     video.addEventListener('playing', begin);
-    if (!video.paused && video.readyState >= 3) begin();       // بدأ التشغيل التلقائي قبل تسجيل المستمع
-    video.addEventListener('ended', draw);                       // تثبيت آخر إطار (اللوجو كاملاً)
-    video.addEventListener('error', showFallback);
+    video.addEventListener('ended', () => { draw(); finished = true; card.classList.add('logo-done'); });   // النهاية: يبقى آخر إطار من الفيديو معروضاً
+    // عند العودة للتطبيق: إن فُرغت لوحة الرسم بصمت نعرض الصورة الثابتة (مأخوذة من آخر إطار فلا يتغير شيء)
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && finished && !stopped && canvasBlank()) showStatic(); });
+    video.addEventListener('error', showStatic);
+    if (!video.paused && video.readyState >= 3) begin();       // بدأ التشغيل التلقائي قبل تسجيل المستمعين
 
     video.muted = true;                                          // مطلوب ليعمل التشغيل التلقائي
     const p = video.play();
-    if (p && p.catch) p.catch(showFallback);                     // التشغيل التلقائي ممنوع (مثلاً توفير الطاقة)
-    setTimeout(() => { if (!video.paused && video.currentTime > 0) begin(); else showFallback(); }, 3000);                              // إن لم يبدأ الفيديو خلال 3 ثوانٍ
+    if (p && p.catch) p.catch(showStatic);                       // التشغيل التلقائي ممنوع (مثلاً توفير الطاقة)
+    setTimeout(() => { if (!began) showStatic(); }, 2000);       // لم يبدأ الفيديو خلال ثانيتين
+    setTimeout(() => { if (!stopped) showStatic(); }, 9000);     // شبكة أمان إن تجمّد الفيديو قبل نهايته
 
     return { stop() { stopped = true; video.pause(); } };
 }
@@ -286,13 +285,32 @@ function applyUser(user) {
         ? 'قائمة أسعار التوصيل لمناطق السلط'
         : 'قائمة أسعار مستقلة لكل من السرو وأم النعاج';
     document.getElementById('logoutBtn').style.display = user ? 'flex' : 'none';
+    document.body.classList.toggle('authed', !!user);          // التطبيق مخفي قبل تسجيل الدخول
+    document.getElementById('appShell').inert = !user;         // ولا يمكن الوصول إليه بالكيبورد أيضاً
 }
 
-function showLogin(show, instant) {
-    const el = document.getElementById('login');
-    if (instant) el.style.transition = 'none';
-    el.classList.toggle('hide', !show);
-    if (instant) { void el.offsetWidth; el.style.transition = ''; }
+/* الإطار الزجاجي يكبر ليظهر نموذج الدخول، وزر الرجوع يعيد الشاشة الافتتاحية كما كانت */
+let introCtl = null;
+function setLoginFocusable(on) {
+    document.querySelectorAll('#loginPanel input, #loginPanel button, #loginBack').forEach(el => el.tabIndex = on ? 0 : -1);
+    document.getElementById('loginPanel').setAttribute('aria-hidden', on ? 'false' : 'true');
+}
+function openLogin() {
+    document.getElementById('splash').classList.add('login-mode');
+    setLoginFocusable(true);
+    if (window.matchMedia('(hover:hover)').matches) setTimeout(() => document.getElementById('loginUser').focus(), 650);
+}
+function closeLogin() {
+    document.getElementById('splash').classList.remove('login-mode');
+    setLoginFocusable(false);
+    document.getElementById('loginError').textContent = '';
+    ['loginUserField', 'loginPassField'].forEach(id => document.getElementById(id).classList.remove('invalid'));
+    document.getElementById('loginPass').value = '';
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+}
+function finishLogin() {
+    document.getElementById('splash').classList.add('hide');
+    if (introCtl) setTimeout(introCtl.stop, 800);
 }
 
 async function submitLogin(ev) {
@@ -324,7 +342,7 @@ async function submitLogin(ev) {
     passEl.value = '';
     applyUser(user);
     resetAndGo('screen-home');
-    showLogin(false);
+    finishLogin();
 }
 
 function togglePass() {
@@ -337,7 +355,6 @@ function togglePass() {
 
 function logout() {
     clearSession();
-    try { sessionStorage.setItem('hw-skip-splash', '1'); } catch (e) {}
     location.reload();
 }
 
@@ -579,26 +596,27 @@ document.addEventListener('DOMContentLoaded', () => {
     buildSplashIcons();
     let skipSplash = false;
     try { skipSplash = sessionStorage.getItem('hw-skip-splash') === '1'; sessionStorage.removeItem('hw-skip-splash'); } catch (e) {}
-    if (skipSplash) {
-        const sp = document.getElementById('splash');
-        sp.style.transition = 'none'; sp.classList.add('hide');
-    }
 
-    // تسجيل الدخول: مستخدم محفوظ يدخل مباشرة، وغيره تظهر له شاشة الدخول بعد الشاشة الافتتاحية
     const saved = readSession();
     applyUser(saved);
-    showLogin(!saved, true);
-    document.getElementById('loginForm').addEventListener('submit', submitLogin);
-
+    if (!saved) skipSplash = false;          // بدون مستخدم لا نتخطى الشاشة الافتتاحية (فهي تحمل تسجيل الدخول)
     const splash = document.getElementById('splash');
-    const intro = skipSplash ? null : initIntroVideo();
+    if (skipSplash) { splash.style.transition = 'none'; splash.classList.add('hide'); }
+
+    introCtl = skipSplash ? null : initIntroVideo();
+    document.getElementById('loginForm').addEventListener('submit', submitLogin);
     document.getElementById('enterBtn').addEventListener('click', () => {
-        splash.classList.add('hide');
-        if (intro) setTimeout(intro.stop, 800);          // توفير للبطارية بعد إخفاء الشاشة
+        if (saved) finishLogin();            // مستخدم محفوظ: يدخل مباشرة
+        else openLogin();                    // غيره: الإطار الزجاجي يكبر لتسجيل الدخول
     });
+
+    // صفحة مستعادة من ذاكرة المتصفح، أو تسجيل خروج/دخول من تبويب آخر: نعيد التحميل كي لا تظهر حالة قديمة
+    window.addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); });
+    window.addEventListener('storage', (e) => { if (e.key === SESSION_KEY) location.reload(); });
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+            if (splash.classList.contains('login-mode') && !splash.classList.contains('hide')) closeLogin();
             closeOrderModal();
             closeConstruction();
         }

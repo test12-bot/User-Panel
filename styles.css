@@ -161,10 +161,10 @@ body{touch-action:manipulation;}
 .logo-stage{position:relative; height:calc(var(--logo-w) * 560 / 1286 + 44px);}   /* ارتفاع اللوجو السابق + الحشوة */
 /* الفيديو مصدر فقط (مخفي)؛ يُعرض عبر canvas بعد إزالة خلفيته التركوازية فتصبح شفافة */
 .splash-video{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;}
-.splash-canvas{position:absolute; left:-3.25%; top:-3.25%; width:106.5%; height:106.5%; object-fit:cover; display:block;}
+.splash-canvas{z-index:1; position:absolute; left:-3.25%; top:-3.25%; width:106.5%; height:106.5%; object-fit:cover; display:block;}
 /* صورة اللوجو الثابتة: بديل إن مُنع التشغيل أو لم يدعم الجهاز WebGL */
 .splash-fallback{display:none; position:absolute; left:-3.25%; top:-3.25%; width:106.5%; height:106.5%; object-fit:cover;}   /* نفس مكان وحجم لوحة الفيديو تماماً */
-.static-logo .splash-fallback{display:block;}
+.static-logo .splash-fallback,.logo-done .splash-fallback{display:block;}   /* بعد نهاية الفيديو تبقى الصورة خلف اللوحة: إن أومضت اللوحة على iOS لا يختفي اللوجو */
 .static-logo .splash-canvas{display:none;}
 @keyframes logoPop{
     0%{ opacity:0; transform:scale(.72) translateY(14px); }

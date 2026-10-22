@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=6">
+<link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
 
@@ -25,59 +25,69 @@
   </svg>
 </div>
 
-<!-- الشاشة الافتتاحية -->
+<!-- الشاشة الافتتاحية + تسجيل الدخول (الإطار الزجاجي نفسه يكبر) -->
 <div id="splash">
   <div class="splash-icons" id="splashIcons"></div>
   <div class="splash-content">
-    <div class="splash-logo-wrap">
-      <video class="splash-video" id="splashVideo" autoplay muted playsinline preload="auto" aria-hidden="true">
-        <source src="splash-intro.mp4" type="video/mp4">
-        <source src="splash-intro.webm" type="video/webm">
-      </video>
-      <canvas class="splash-canvas" id="splashCanvas" width="1080" height="530" role="img" aria-label="HIGHWAY Delivery"></canvas>
-      <img class="splash-fallback" id="splashFallback" src="logo-full.png" alt="HIGHWAY Delivery" width="1286" height="560">
-    </div>
-    <div class="splash-tagline">أسرع طريق لطلباتك</div>
-    <div class="splash-status">
-      <span>جاري تجهيز قائمة الأسعار</span>
-      <span class="dot-flow"><span></span><span></span><span></span></span>
-    </div>
-    <button class="splash-enter" id="enterBtn" type="button">الدخول ←</button>
-  </div>
-</div>
-
-<!-- تسجيل الدخول -->
-<div id="login" class="hide" role="dialog" aria-label="تسجيل الدخول">
-  <form class="login-card glass" id="loginForm" novalidate autocomplete="on">
-    <span class="login-badge"><img class="login-logo" src="logo-icon.png" alt="HIGHWAY Delivery" width="647" height="560"></span>
-    <h1>تسجيل الدخول</h1>
-    <p class="login-sub">أدخل بيانات حسابك للمتابعة</p>
-
-    <div class="field" id="loginUserField">
-      <label for="loginUser">اسم المستخدم</label>
-      <input type="text" id="loginUser" name="username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" dir="ltr" placeholder="Username">
-    </div>
-    <div class="field" id="loginPassField">
-      <label for="loginPass">كلمة المرور</label>
-      <div class="pass-wrap">
-        <input type="password" id="loginPass" name="password" autocomplete="current-password" dir="ltr" placeholder="Password">
-        <button type="button" class="pass-toggle" id="passToggle" onclick="togglePass()" aria-label="إظهار كلمة المرور">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+    <div class="splash-logo-wrap" id="splashCard">
+      <div class="logo-stage">
+        <video class="splash-video" id="splashVideo" autoplay muted playsinline preload="auto" aria-hidden="true">
+          <source src="splash-intro.mp4" type="video/mp4">
+          <source src="splash-intro.webm" type="video/webm">
+        </video>
+        <canvas class="splash-canvas" id="splashCanvas" width="1080" height="530" role="img" aria-label="HIGHWAY Delivery"></canvas>
+        <img class="splash-fallback" src="splash-logo-final.png" alt="" width="1080" height="530" aria-hidden="true">
+        <button class="login-back" id="loginBack" type="button" onclick="closeLogin()" aria-label="رجوع للشاشة الرئيسية" tabindex="-1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
         </button>
+      </div>
+
+      <div class="login-panel" id="loginPanel" aria-hidden="true">
+        <div class="login-clip">
+          <form class="login-form" id="loginForm" novalidate autocomplete="on">
+            <h1>تسجيل الدخول</h1>
+            <p class="login-sub">أدخل بيانات حسابك للمتابعة</p>
+
+            <div class="field" id="loginUserField">
+              <label for="loginUser">اسم المستخدم</label>
+              <input type="text" id="loginUser" name="username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" dir="ltr" placeholder="Username" tabindex="-1">
+            </div>
+            <div class="field" id="loginPassField">
+              <label for="loginPass">كلمة المرور</label>
+              <div class="pass-wrap">
+                <input type="password" id="loginPass" name="password" autocomplete="current-password" dir="ltr" placeholder="Password" tabindex="-1">
+                <button type="button" class="pass-toggle" id="passToggle" onclick="togglePass()" aria-label="إظهار كلمة المرور" tabindex="-1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <label class="remember"><input type="checkbox" id="loginRemember" tabindex="-1"><span class="box"></span><span>تذكرني على هذا الجهاز</span></label>
+            <div class="login-error" id="loginError" role="alert"></div>
+
+            <button type="submit" class="submit-btn" id="loginBtn" tabindex="-1">
+              <span class="spinner"></span>
+              <span class="btn-label">دخول</span>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
 
-    <label class="remember"><input type="checkbox" id="loginRemember"><span class="box"></span><span>تذكرني على هذا الجهاز</span></label>
-    <div class="login-error" id="loginError" role="alert"></div>
-
-    <button type="submit" class="submit-btn" id="loginBtn">
-      <span class="spinner"></span>
-      <span class="btn-label">دخول</span>
-    </button>
-  </form>
+    <div class="splash-extras" id="splashExtras">
+      <div class="splash-extras-in"><div class="splash-extras-pad">
+        <div class="splash-tagline">أسرع طريق لطلباتك</div>
+        <div class="splash-status">
+          <span>جاري تجهيز قائمة الأسعار</span>
+          <span class="dot-flow"><span></span><span></span><span></span></span>
+        </div>
+        <button class="splash-enter" id="enterBtn" type="button">الدخول ←</button>
+      </div></div>
+    </div>
+  </div>
 </div>
 
-<div class="app-shell">
+<div class="app-shell" id="appShell">
 
   <header class="app-header">
     <button class="header-back" id="headerBack" type="button" aria-label="رجوع" onclick="goBack()">
@@ -345,6 +355,6 @@
   </div>
 </div>
 
-<script src="script.js?v=6"></script>
+<script src="script.js?v=9"></script>
 </body>
 </html>

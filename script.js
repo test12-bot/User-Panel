@@ -284,9 +284,55 @@ function applyUser(user) {
     document.getElementById('saltDesc').textContent = user && user.start
         ? 'قائمة أسعار التوصيل لمناطق السلط'
         : 'قائمة أسعار مستقلة لكل من السرو وأم النعاج';
-    document.getElementById('logoutBtn').style.display = user ? 'flex' : 'none';
+    document.getElementById('userWrap').style.display = user ? '' : 'none';
+    if (user) fillUserUI(user);
+    closeUserMenu();
     document.body.classList.toggle('authed', !!user);          // التطبيق مخفي قبل تسجيل الدخول
     document.getElementById('appShell').inert = !user;         // ولا يمكن الوصول إليه بالكيبورد أيضاً
+}
+
+/* ---------- الحساب: الصورة، القائمة، صفحة الملف الشخصي ---------- */
+const ADMIN_NAME = 'HIGHWAY Delivery';
+function userName(u) { return u.label || ADMIN_NAME; }
+function userRole(u) { return u.start ? 'متجر شريك' : 'مسؤول النظام'; }
+
+function setAvatar(img, u) {
+    img.onerror = () => { img.onerror = null; img.src = 'logo-icon.png'; };
+    img.src = `avatars/${u.id}.jpg`;
+}
+
+function fillUserUI(u) {
+    setAvatar(document.getElementById('avatarImg'), u);
+    setAvatar(document.getElementById('umImg'), u);
+    setAvatar(document.getElementById('pfImg'), u);
+    document.getElementById('umName').textContent = userName(u);
+    document.getElementById('umRole').textContent = userRole(u);
+    document.getElementById('pfName').textContent = userName(u);
+    document.getElementById('pfHandle').textContent = '@' + u.names[0];
+    document.getElementById('pfChip').textContent = userRole(u);
+    document.getElementById('pfUser').textContent = u.names[0];
+    document.getElementById('pfType').textContent = userRole(u);
+    document.getElementById('pfStart').textContent = u.start ? START_LABELS[u.start] : 'السرو وأم النعاج';
+    const pdf = document.getElementById('pfPdf');
+    pdf.style.display = u.pdf ? '' : 'none';
+    if (u.pdf) pdf.href = u.pdf;
+}
+
+function closeUserMenu() {
+    const m = document.getElementById('userMenu'), b = document.getElementById('avatarBtn');
+    if (!m) return;
+    m.classList.remove('open'); m.setAttribute('aria-hidden', 'true'); m.inert = true;
+    b.setAttribute('aria-expanded', 'false');
+}
+function toggleUserMenu() {
+    const m = document.getElementById('userMenu');
+    if (m.classList.contains('open')) return closeUserMenu();
+    m.classList.add('open'); m.setAttribute('aria-hidden', 'false'); m.inert = false;
+    document.getElementById('avatarBtn').setAttribute('aria-expanded', 'true');
+}
+function openProfile() {
+    closeUserMenu();
+    if (currentUser) goTo('screen-profile');
 }
 
 /* الإطار الزجاجي يكبر ليظهر نموذج الدخول، وزر الرجوع يعيد الشاشة الافتتاحية كما كانت */
@@ -360,6 +406,7 @@ function logout() {
 
 /* ---------- التنقل ---------- */
 function showScreen(id) {
+    closeUserMenu();
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.getElementById('headerBack').classList.toggle('show', id !== 'screen-home');
@@ -619,6 +666,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (splash.classList.contains('login-mode') && !splash.classList.contains('hide')) closeLogin();
             closeOrderModal();
             closeConstruction();
+            closeUserMenu();
         }
     });
+    document.addEventListener('click', (e) => { if (!e.target.closest('#userWrap')) closeUserMenu(); });
 });

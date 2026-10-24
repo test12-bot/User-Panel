@@ -11,19 +11,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=12">
+<link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
 
-<div class="ambient">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-  <svg viewBox="0 0 400 900" preserveAspectRatio="none">
-    <path class="road-line" d="M -40,760 C 120,700 100,560 220,520 C 340,480 300,340 420,300"/>
-    <path class="road-line" d="M -60,160 C 60,120 40,260 160,300 C 300,340 260,180 440,220" style="animation-duration:26s; animation-direction:reverse;"/>
-  </svg>
-</div>
+<div class="ambient"></div>
 
 <!-- الشاشة الافتتاحية + تسجيل الدخول (الإطار الزجاجي نفسه يكبر) -->
 <div id="splash">
@@ -32,11 +24,11 @@
     <div class="splash-logo-wrap" id="splashCard">
       <div class="logo-stage">
         <video class="splash-video" id="splashVideo" autoplay muted playsinline preload="auto" aria-hidden="true">
-          <source src="splash-intro.mp4?v=12" type="video/mp4">
-          <source src="splash-intro.webm?v=12" type="video/webm">
+          <source src="splash-intro.mp4?v=13" type="video/mp4">
+          <source src="splash-intro.webm?v=13" type="video/webm">
         </video>
         <canvas class="splash-canvas" id="splashCanvas" width="1080" height="530" role="img" aria-label="HIGHWAY Delivery"></canvas>
-        <img class="splash-fallback" src="splash-logo-final.png?v=12" alt="" width="1080" height="530" aria-hidden="true">
+        <img class="splash-fallback" src="splash-logo-final.png?v=13" alt="" width="1080" height="530" aria-hidden="true">
         <button class="login-back" id="loginBack" type="button" onclick="closeLogin()" aria-label="رجوع للشاشة الرئيسية" tabindex="-1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
         </button>
@@ -416,6 +408,6 @@
   </div>
 </div>
 
-<script src="script.js?v=12"></script>
+<script src="script.js?v=13"></script>
 </body>
 </html>

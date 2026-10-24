@@ -335,6 +335,27 @@ function openProfile() {
     if (currentUser) goTo('screen-profile');
 }
 
+/* ---------- الوضع الداكن ---------- */
+function isDark() { return document.documentElement.dataset.theme === 'dark'; }
+function syncTheme() {
+    document.getElementById('themeToggle').setAttribute('aria-checked', String(isDark()));
+    const m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.content = isDark() ? '#0B4143' : '#25CED1';
+}
+function toggleTheme() {
+    if (isDark()) delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = 'dark';
+    try { localStorage.setItem('hw-theme', isDark() ? 'dark' : 'light'); } catch (e) {}
+    syncTheme();
+}
+
+/* حركة المنحنى عند الضغط على الأزرار الرئيسية */
+document.addEventListener('pointerdown', (e) => {
+    const el = e.target.closest('.submit-btn, .splash-enter, .action-card');
+    if (!el) return;
+    el.classList.remove('swoosh-go'); void el.offsetWidth; el.classList.add('swoosh-go');
+    setTimeout(() => el.classList.remove('swoosh-go'), 700);
+}, { passive: true });
+
 /* الإطار الزجاجي يكبر ليظهر نموذج الدخول، وزر الرجوع يعيد الشاشة الافتتاحية كما كانت */
 let introCtl = null;
 function setLoginFocusable(on) {
@@ -641,6 +662,7 @@ function closeConstruction() {
 /* ---------- تشغيل ---------- */
 document.addEventListener('DOMContentLoaded', () => {
     buildSplashIcons();
+    syncTheme();
     let skipSplash = false;
     try { skipSplash = sessionStorage.getItem('hw-skip-splash') === '1'; sessionStorage.removeItem('hw-skip-splash'); } catch (e) {}
 

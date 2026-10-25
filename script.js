@@ -2,6 +2,9 @@
    HIGHWAY Delivery — قائمة الأسعار واستدعاء كابتن
    ========================================================= */
 
+try { if ("scrollRestoration" in history) history.scrollRestoration = "manual"; } catch (e) {}
+window.addEventListener("pageshow", () => window.scrollTo(0, 0));
+
 /* ---------- بيانات الأسعار (من قوائم الأسعار الرسمية PDF) ---------- */
 /* p = السعر، وإذا كان نطاقاً يُكتب (الأدنى - الأعلى) ويظهر في الصفحة بنفس شكله في القائمة */
 const PRICES = {
@@ -335,27 +338,6 @@ function openProfile() {
     if (currentUser) goTo('screen-profile');
 }
 
-/* ---------- الوضع الداكن ---------- */
-function isDark() { return document.documentElement.dataset.theme === 'dark'; }
-function syncTheme() {
-    document.getElementById('themeToggle').setAttribute('aria-checked', String(isDark()));
-    const m = document.querySelector('meta[name="theme-color"]');
-    if (m) m.content = isDark() ? '#0B4143' : '#25CED1';
-}
-function toggleTheme() {
-    if (isDark()) delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = 'dark';
-    try { localStorage.setItem('hw-theme', isDark() ? 'dark' : 'light'); } catch (e) {}
-    syncTheme();
-}
-
-/* حركة المنحنى عند الضغط على الأزرار الرئيسية */
-document.addEventListener('pointerdown', (e) => {
-    const el = e.target.closest('.submit-btn, .splash-enter, .action-card');
-    if (!el) return;
-    el.classList.remove('swoosh-go'); void el.offsetWidth; el.classList.add('swoosh-go');
-    setTimeout(() => el.classList.remove('swoosh-go'), 700);
-}, { passive: true });
-
 /* الإطار الزجاجي يكبر ليظهر نموذج الدخول، وزر الرجوع يعيد الشاشة الافتتاحية كما كانت */
 let introCtl = null;
 function setLoginFocusable(on) {
@@ -584,6 +566,8 @@ function calculateTotal() {
 }
 
 /* ---------- نافذة تفاصيل الطلب ---------- */
+const escHtml = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 function openOrderModal(type, data = {}) {
     if (type === 'calc') {
         const dist = parseFloat(document.getElementById('distanceInput').value);
@@ -602,11 +586,14 @@ function openOrderModal(type, data = {}) {
     if (type === 'area') {
         summary.style.display = 'flex';
         summary.innerHTML =
-            `<span>من: ${data.startPoint}</span><span>إلى: ${data.area}</span><span>السعر: ${data.price} دينار</span>`;
+            `<div class="rt"><i></i><small>من</small><b>${escHtml(data.startPoint)}</b></div>` +
+            `<div class="rt end"><i></i><small>إلى</small><b>${escHtml(data.area)}</b></div>` +
+            `<div class="rt-price">${escHtml(data.price)} دينار</div>`;
     } else if (type === 'calc') {
         summary.style.display = 'flex';
         summary.innerHTML =
-            `<span>المسافة: ${calcState.dist} كم</span><span>السعر التقديري: ${calcState.total} JOD</span>`;
+            `<div class="rt"><i></i><small>المسافة</small><b>${escHtml(calcState.dist)} كم</b></div>` +
+            `<div class="rt-price">${escHtml(calcState.total)} JOD</div>`;
     } else {
         summary.style.display = 'none';
         summary.innerHTML = '';
@@ -659,10 +646,24 @@ function closeConstruction() {
     document.getElementById('constructionModal').classList.remove('show');
 }
 
+
+/* البطاقة المختارة: خط بلون الهوية ثم الانتقال */
+document.addEventListener('click', (e) => {
+    const el = e.target.closest('.action-card, .rest-card, .price-row');
+    if (!el || el.dataset.go === '1' || el.classList.contains('picked')) return;
+    if (el.tagName === 'A' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.classList.add('picked'); setTimeout(() => el.classList.remove('picked'), 600); return; }
+    e.preventDefault(); e.stopPropagation();
+    el.classList.add('picked');
+    const par = el.parentElement; if (par) par.classList.add('pick-dim');
+    setTimeout(() => {
+        el.dataset.go = '1'; el.click(); delete el.dataset.go;
+        setTimeout(() => { el.classList.remove('picked'); if (par) par.classList.remove('pick-dim'); }, 60);
+    }, 130);
+}, true);
+
 /* ---------- تشغيل ---------- */
 document.addEventListener('DOMContentLoaded', () => {
     buildSplashIcons();
-    syncTheme();
     let skipSplash = false;
     try { skipSplash = sessionStorage.getItem('hw-skip-splash') === '1'; sessionStorage.removeItem('hw-skip-splash'); } catch (e) {}
 

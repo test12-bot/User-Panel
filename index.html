@@ -6,13 +6,12 @@
 <meta name="description" content="HIGHWAY Delivery — قائمة أسعار التوصيل واستدعاء كابتن">
 <title>HIGHWAY Delivery | قائمة الأسعار، واستدعاء كابتن</title>
 <meta name="theme-color" content="#25CED1">
-<script>try{var t=localStorage.getItem("hw-theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.dataset.theme="dark";}catch(e){}</script>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;500;600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=15">
+<link rel="stylesheet" href="styles.css?v=24">
 </head>
 <body>
 
@@ -25,11 +24,11 @@
     <div class="splash-logo-wrap" id="splashCard">
       <div class="logo-stage">
         <video class="splash-video" id="splashVideo" autoplay muted playsinline preload="auto" aria-hidden="true">
-          <source src="splash-intro.mp4?v=15" type="video/mp4">
-          <source src="splash-intro.webm?v=15" type="video/webm">
+          <source src="splash-intro.mp4?v=23" type="video/mp4">
+          <source src="splash-intro.webm?v=23" type="video/webm">
         </video>
         <canvas class="splash-canvas" id="splashCanvas" width="1080" height="530" role="img" aria-label="HIGHWAY Delivery"></canvas>
-        <img class="splash-fallback" src="splash-logo-final.png?v=15" alt="" width="1080" height="530" aria-hidden="true">
+        <img class="splash-fallback" src="splash-logo-final.png?v=23" alt="" width="1080" height="530" aria-hidden="true">
         <button class="login-back" id="loginBack" type="button" onclick="closeLogin()" aria-label="رجوع للشاشة الرئيسية" tabindex="-1">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
         </button>
@@ -59,7 +58,7 @@
             <div class="login-error" id="loginError" role="alert"></div>
 
             <button type="submit" class="submit-btn" id="loginBtn" tabindex="-1">
-              <span class="spinner"><i></i><i></i></span>
+              <span class="spinner"></span>
               <span class="btn-label">دخول</span>
             </button>
           </form>
@@ -105,10 +104,6 @@
         <button class="um-item" type="button" role="menuitem" onclick="openProfile()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
           <span>الملف الشخصي</span>
-        </button>
-        <button class="um-item um-toggle" id="themeToggle" type="button" role="menuitemcheckbox" aria-checked="false" onclick="toggleTheme()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
-          <span>الوضع الداكن</span><span class="sw" aria-hidden="true"></span>
         </button>
         <button class="um-item danger" type="button" role="menuitem" onclick="logout()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
@@ -413,6 +408,6 @@
   </div>
 </div>
 
-<script src="script.js?v=15"></script>
+<script src="script.js?v=25"></script>
 </body>
 </html>
